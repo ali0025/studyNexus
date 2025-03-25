@@ -1,63 +1,71 @@
-const express=require("express");
-const app=express();
+const express = require("express");
+const app = express();
 
-
-const userRoutes=require("./routes/user");
-const profileRoutes=require("./routes/profile");
-const paymentRoutes=require("./routes/Payments");
-const courseRoutes=require("./routes/Course");
-const database=require("./config/database");
-const cookieParser=require("cookie-parser");
-const cors=require("cors");
-const {cloudinaryConnect}=require("./config/cloudinary");
-const fileUpload=require("express-fileupload")
-const dotenv=require("dotenv");
+const userRoutes = require("./routes/user");
+const profileRoutes = require("./routes/profile");
+const paymentRoutes = require("./routes/Payments");
+const courseRoutes = require("./routes/Course");
+const database = require("./config/database");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const { cloudinaryConnect } = require("./config/cloudinary");
+const fileUpload = require("express-fileupload");
+const dotenv = require("dotenv");
 
 dotenv.config();
-const PORT=process.env.PORT||4000;
+const PORT = process.env.PORT || 4000;
 
+// Database connection
 database.connect();
 
-// middleware
+// Unified CORS configuration
+const allowedOrigins = [
+  "https://study-nexus.vercel.app", // Production frontend
+  "https://study-nexus-rwkh-git-main-alis-projects-467e095b.vercel.app", // Preview frontend
+  "http://localhost:5173", // Local development
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow cookies/auth headers
+  })
+);
+
+// Other middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
-    cors({
-        origin:"http://localhost:5173",
-        creadentials:true
-    })
-)
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp",
+  })
+);
 
-app.use(
-    fileUpload({
-        useTempFiles:true,
-       tempFileDir:"/tmp" 
-    })
-)
-
-
-// cloudinary connections
+// Cloudinary connection
 cloudinaryConnect();
 
-// routes
-app.use("/api/v1/auth",userRoutes);
-app.use("/api/v1/profile",profileRoutes);
-app.use("/api/v1/course",courseRoutes);
-app.use("/api/v1/payment",paymentRoutes);
+// Routes
+app.use("/api/v1/auth", userRoutes);
+app.use("/api/v1/profile", profileRoutes);
+app.use("/api/v1/course", courseRoutes);
+app.use("/api/v1/payment", paymentRoutes);
 
-
-// default routes
-// Testing the server
+// Default route
 app.get("/", (req, res) => {
-	return res.json({
-		success: true,
-		message: "Your server is up and running ...",
-	});
+  return res.json({
+    success: true,
+    message: "Your server is up and running ...",
+  });
 });
 
-// Listening to the server
-app.listen(process.env.PORT || PORT, () => {
-    console.log(`Go catch the server at PORT ${process.env.PORT || PORT}`);
-  })
-
-// End of code.
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running at PORT ${PORT}`);
+});
