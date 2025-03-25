@@ -21,6 +21,7 @@ database.connect();
 // Unified CORS configuration
 const allowedOrigins = [
   "https://study-nexus.vercel.app", // Production frontend
+  "https://study-nexus-rwkh.vercel.app",
   "https://study-nexus-rwkh-git-main-alis-projects-467e095b.vercel.app", // Preview frontend
   "http://localhost:5173", // Local development
 ];
