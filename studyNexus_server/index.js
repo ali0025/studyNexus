@@ -26,21 +26,7 @@ const allowedOrigins = [
   "http://localhost:5173", // Local development
 ];
 
-app.use(
-    cors({
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          console.log(`Blocked CORS request from: ${origin}`); // Debug log
-          callback(new Error(`Origin ${origin} not allowed by CORS`));
-        }
-      },
-      credentials: true, // Allow cookies/auth headers
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
-      allowedHeaders: ['Content-Type', 'Authorization'],    // Allowed headers
-    })
-  );
+app.use(cors({ origin: "*", credentials: true }));
 
 // Other middleware
 app.use(express.json());
