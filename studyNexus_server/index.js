@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(
     cors({
         origin:true,
-        creadentials:true
+        credentials: true
     })
 )
 
